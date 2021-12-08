@@ -14,13 +14,17 @@ public class User {
     private String password;
     @Column(name = "age")
     private int age;
+
     public User() {
     }
+
     public User(String username, String password, int age) {
         this.username=username;
         this.password=password;
         this.age=age;
     }
+
+
     public long getId() {
         return id;
     }
@@ -42,6 +46,7 @@ public class User {
     public void setAge(int age) {
         this.age=age;
     }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", username=" + username + ", password=" +

@@ -36,26 +36,35 @@ import java.util.Optional;
             }
         }
         @PostMapping("/users")
-        public void createUser(@RequestBody User user) {
+        public void createUser(@RequestBody User user, String repeat) {
             List<User> users = new ArrayList<User>(userRepository.findByUsernameContaining(user.getUsername()));
             if(users.size()!=0){
                 throw new ResponseStatusException(HttpStatus.CONFLICT);
             }else {
-                userRepository.save(new User(user.getUsername(), user.getPassword(), user.getAge()));
+                if (repeat.equals(user.getPassword())) {
+                    userRepository.save(new User(user.getUsername(), user.getPassword(), user.getAge()));
+                }else{
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
+
             }
 
         }
         @PutMapping("/users/{id}")
-        public void updateUser(@PathVariable("id") long id, @RequestBody User user) {
+        public void updateUser(@PathVariable("id") long id, @RequestBody User user, String repeat) {
             Optional<User> userData = userRepository.findById(id);
-            if (userData.isPresent()) {
-                User _user = userData.get();
-                _user.setUsername(user.getUsername());
-                _user.setPassword(user.getPassword());
-                _user.setAge(user.getAge());
+            if(user.getPassword().equals(repeat)) {
+                if (userData.isPresent()) {
+                    User _user = userData.get();
+                    _user.setUsername(user.getUsername());
+                    _user.setPassword(user.getPassword());
+                    _user.setAge(user.getAge());
 
-            } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+                } else {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+                }
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
         }
         @DeleteMapping("/users/{id}")
